@@ -1,7 +1,7 @@
 package helper
 
 import (
-	"department-service/logger"
+	"services-management/logger"
 
 	"github.com/gin-gonic/gin"
 )

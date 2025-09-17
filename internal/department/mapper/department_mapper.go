@@ -1,9 +1,9 @@
 package mapper
 
 import (
-	"department-service/internal/department/dto/response"
-	"department-service/internal/department/model"
-	"department-service/internal/gateway/dto"
+	"services-management/internal/department/dto/response"
+	"services-management/internal/department/model"
+	"services-management/internal/gateway/dto"
 )
 
 func MapDepartmentToResponse(dept *model.Department, menus []dto.MenuResponse, iconUrl string) *response.DepartmentResponseDTO {

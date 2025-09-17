@@ -1,11 +1,11 @@
 package router
 
 import (
-	"department-service/internal/department/handler"
-	"department-service/internal/department/repository"
-	"department-service/internal/department/route"
-	"department-service/internal/department/service"
-	"department-service/internal/gateway"
+	"services-management/internal/department/handler"
+	"services-management/internal/department/repository"
+	"services-management/internal/department/route"
+	"services-management/internal/department/service"
+	"services-management/internal/gateway"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hashicorp/consul/api"

@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"department-service/helper"
-	"department-service/internal/department/dto/request"
-	"department-service/internal/department/service"
 	"errors"
 	"net/http"
+	"services-management/helper"
+	"services-management/internal/department/dto/request"
+	"services-management/internal/department/service"
 
 	"github.com/gin-gonic/gin"
 )

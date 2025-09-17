@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"department-service/internal/department/dto/response"
-	"department-service/internal/department/model"
+	"services-management/internal/department/dto/response"
+	"services-management/internal/department/model"
 )
 
 func MapRegionToResponse(region *model.Region) *response.RegionResponseDTO {

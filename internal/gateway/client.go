@@ -2,12 +2,12 @@ package gateway
 
 import (
 	"bytes"
-	"department-service/logger"
-	"department-service/pkg/consul"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"services-management/logger"
+	"services-management/pkg/consul"
 
 	"github.com/hashicorp/consul/api"
 )

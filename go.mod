@@ -1,4 +1,4 @@
-module department-service
+module services-management
 
 go 1.24.4
 

@@ -2,13 +2,13 @@ package service
 
 import (
 	"context"
-	"department-service/internal/department/dto/request"
-	"department-service/internal/department/dto/response"
-	"department-service/internal/department/mapper"
-	"department-service/internal/department/model"
-	"department-service/internal/department/repository"
-	"department-service/internal/gateway"
 	"fmt"
+	"services-management/internal/department/dto/request"
+	"services-management/internal/department/dto/response"
+	"services-management/internal/department/mapper"
+	"services-management/internal/department/model"
+	"services-management/internal/department/repository"
+	"services-management/internal/gateway"
 	"time"
 )
 

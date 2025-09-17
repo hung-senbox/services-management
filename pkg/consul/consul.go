@@ -1,12 +1,12 @@
 package consul
 
 import (
-	"department-service/pkg/config"
-	"department-service/pkg/zap"
 	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
+	"services-management/pkg/config"
+	"services-management/pkg/zap"
 	"strconv"
 	"time"
 
@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	serviceName = "department-service"
+	serviceName = "services-management"
 	ttl         = time.Second * 15
-	checkId     = "department-service-health-check"
+	checkId     = "services-management-health-check"
 )
 
 var (
@@ -108,7 +108,7 @@ func (c *service) setupConsul() {
 		Name:    serviceName, // Service name
 		Port:    port,        // Service port
 		Address: hostname,    // Service address
-		Tags:    []string{"go", "department-service"},
+		Tags:    []string{"go", "services-management"},
 		Check:   check,
 	}
 

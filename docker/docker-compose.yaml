@@ -43,11 +43,11 @@ services:
       # - "8600:53/tcp"
     restart: unless-stopped
 
-  department-service:
+  services-management:
     build:
       context: ..
       dockerfile: Dockerfile
-    container_name: department-service
+    container_name: services-management
     ports:
       - "8019:8019"
     depends_on:

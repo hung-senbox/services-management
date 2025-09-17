@@ -1,8 +1,8 @@
 package route
 
 import (
-	"department-service/internal/department/handler"
-	"department-service/internal/middleware"
+	"services-management/internal/department/handler"
+	"services-management/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )

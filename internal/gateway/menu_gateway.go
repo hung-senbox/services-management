@@ -2,11 +2,11 @@ package gateway
 
 import (
 	"context"
-	"department-service/internal/department/dto/request"
-	"department-service/internal/gateway/dto"
-	"department-service/pkg/constants"
 	"encoding/json"
 	"fmt"
+	"services-management/internal/department/dto/request"
+	"services-management/internal/gateway/dto"
+	"services-management/pkg/constants"
 
 	"github.com/hashicorp/consul/api"
 )

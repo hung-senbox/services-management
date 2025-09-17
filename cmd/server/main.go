@@ -8,12 +8,12 @@ import (
 
 	// "os"
 
-	"department-service/pkg/config"
-	"department-service/pkg/consul"
-	"department-service/pkg/db"
-	"department-service/pkg/router"
+	"services-management/pkg/config"
+	"services-management/pkg/consul"
+	"services-management/pkg/db"
+	"services-management/pkg/router"
 
-	"department-service/pkg/zap"
+	"services-management/pkg/zap"
 
 	consulapi "github.com/hashicorp/consul/api"
 )

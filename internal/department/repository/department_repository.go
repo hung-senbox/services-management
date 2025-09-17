@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	"department-service/internal/department/model"
 	"errors"
 	"fmt"
+	"services-management/internal/department/model"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"

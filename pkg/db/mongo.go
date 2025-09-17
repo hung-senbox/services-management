@@ -2,9 +2,9 @@ package db
 
 import (
 	"context"
-	"department-service/pkg/config"
 	"fmt"
 	"log"
+	"services-management/pkg/config"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"

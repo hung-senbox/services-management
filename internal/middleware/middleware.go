@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
-	"department-service/pkg/constants"
 	"net/http"
+	"services-management/pkg/constants"
 	"strings"
 
 	"github.com/gin-gonic/gin"

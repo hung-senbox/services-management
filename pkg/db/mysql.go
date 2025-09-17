@@ -1,10 +1,10 @@
 package db
 
 import (
-	"department-service/internal/department/model"
-	"department-service/pkg/config"
 	"fmt"
 	"log"
+	"services-management/internal/department/model"
+	"services-management/pkg/config"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

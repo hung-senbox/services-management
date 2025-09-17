@@ -1,8 +1,8 @@
 package response
 
 import (
-	"department-service/internal/department/model"
-	"department-service/internal/gateway/dto"
+	"services-management/internal/department/model"
+	"services-management/internal/gateway/dto"
 )
 
 type DepartmentResponseDTO struct {
