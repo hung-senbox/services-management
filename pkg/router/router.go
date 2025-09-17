@@ -1,36 +1,34 @@
 package router
 
 import (
-	"services-management/internal/department/handler"
-	"services-management/internal/department/repository"
-	"services-management/internal/department/route"
-	"services-management/internal/department/service"
-	"services-management/internal/gateway"
+	"services-management/internal/sv_management/handler"
+	"services-management/internal/sv_management/repository"
+	"services-management/internal/sv_management/route"
+	service "services-management/internal/sv_management/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hashicorp/consul/api"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SetupRouter(consulClient *api.Client, departmentCollection *mongo.Collection, regionCollection *mongo.Collection) *gin.Engine {
+func SetupRouter(consulClient *api.Client, serviceCollection *mongo.Collection, serviceGroupCollection *mongo.Collection) *gin.Engine {
 	r := gin.Default()
 
 	// gateway
-	userGateway := gateway.NewUserGateway("go-main-service", consulClient)
-	menuGateway := gateway.NewMenuGateway("go-main-service", consulClient)
+	//userGateway := gateway.NewUserGateway("go-main-service", consulClient)
 
-	// region
-	regionRepo := repository.NewRegionRepository(regionCollection)
-	regionService := service.NewRegionService(regionRepo, userGateway)
-	regionHandler := handler.NewRegionHandler(regionService)
+	// services
+	serviceRepo := repository.NewServiceRepository(serviceCollection)
+	svManagementService := service.NewSvManagementService(serviceRepo)
+	serviceHandler := handler.NewServiceHandler(svManagementService)
 
-	// department
-	departmentRepo := repository.NewDepartmentRepository(departmentCollection)
-	departmentService := service.NewDepartmentService(departmentRepo, userGateway, menuGateway, regionRepo)
-	departmentHandler := handler.NewDepartmentHandler(departmentService)
+	// services group
+	serviceGroupRepo := repository.NewServiceGroupRepository(serviceGroupCollection)
+	serviceGroupService := service.NewSVGroupService(serviceGroupRepo)
+	serviceGroupHandler := handler.NewServiceGroupHandler(serviceGroupService)
 
 	// Register routes
-	route.RegisterDepartmentRoutes(r, departmentHandler, regionHandler)
+	route.RegisterServiceRoutes(r, serviceHandler, serviceGroupHandler)
 	//route.RegisterRegionRoutes(r, regionHandler)
 	return r
 }

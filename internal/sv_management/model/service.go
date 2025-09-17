@@ -8,17 +8,9 @@ import (
 
 type Service struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	GroupID   primitive.ObjectID `bson:"group_id"`
+	GroupID   string             `bson:"group_id"`
 	Title     string             `bson:"title"`
 	Url       string             `bson:"url"`
-	Order     int                `bson:"order"`
-	CreatedAt time.Time          `bson:"created_at"`
-	UpdatedAt time.Time          `bson:"updated_at"`
-}
-
-type ServiceGroup struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	Title     string             `bson:"title"`
 	Order     int                `bson:"order"`
 	CreatedAt time.Time          `bson:"created_at"`
 	UpdatedAt time.Time          `bson:"updated_at"`

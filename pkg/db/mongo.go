@@ -12,8 +12,8 @@ import (
 )
 
 var MongoClient *mongo.Client
-var DepartmentCollection *mongo.Collection
-var RegionCollection *mongo.Collection
+var ServiceCollection *mongo.Collection
+var ServiceGroupCollection *mongo.Collection
 
 func ConnectMongoDB() {
 	d := config.AppConfig.Database.Mongo
@@ -40,7 +40,7 @@ func ConnectMongoDB() {
 		log.Fatalf("MongoDB ping failed: %v", err)
 	}
 
-	DepartmentCollection = MongoClient.Database(d.Name).Collection("departments")
-	RegionCollection = MongoClient.Database(d.Name).Collection("regions")
-	log.Println("Connected to MongoDB and loaded 'departments', 'regions' collection")
+	ServiceCollection = MongoClient.Database(d.Name).Collection("services")
+	ServiceGroupCollection = MongoClient.Database(d.Name).Collection("service_group")
+	log.Println("Connected to MongoDB and loaded 'services', 'service_group' collection")
 }
