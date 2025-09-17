@@ -49,7 +49,7 @@ services:
       dockerfile: Dockerfile
     container_name: services-management
     ports:
-      - "8019:8019"
+      - "8020:8020"
     depends_on:
       - term_db
       - consul
