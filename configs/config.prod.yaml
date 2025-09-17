@@ -9,14 +9,14 @@ database:
     port: "3306"
     user: "root"
     password: ""
-    name: "department_service"
+    name: "services_management"
 
   mongodb:
     host: "department_db"
     port: "27017"
     # user: "Senbox"
     # password: ""
-    name: "department_service"
+    name: "services_management"
 
 consul:
     host: "localhost"
