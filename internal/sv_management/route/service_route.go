@@ -10,17 +10,16 @@ import (
 func RegisterServiceRoutes(r *gin.Engine, sh *handler.ServiceHandler, sgh *handler.ServiceGroupHandler) {
 	// Admin routes
 	adminGroup := r.Group("/api/v1/admin", middleware.Secured())
+
+	// Service routes
+	services := adminGroup.Group("/services")
 	{
-		// Service routes
-		services := adminGroup.Group("/services")
-		{
-			services.POST("/upload", sh.Upload)
-		}
+		services.POST("/upload", sh.Upload)
 
 		// Service group routes
-		groups := adminGroup.Group("/groups")
+		groups := services.Group("/groups")
 		{
-			groups.POST("/upload", sgh.Upload)
+			groups.POST("", sgh.Upload)
 		}
 	}
 }
