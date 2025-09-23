@@ -15,6 +15,7 @@ func RegisterServiceRoutes(r *gin.Engine, sh *handler.ServiceHandler, sgh *handl
 	services := adminGroup.Group("/services")
 	{
 		services.POST("", sh.Upload)
+		services.GET("", sh.GetServices)
 
 		// Service group routes
 		groups := services.Group("/groups")

@@ -33,3 +33,12 @@ func (s *ServiceHandler) Upload(c *gin.Context) {
 	}
 	helper.SendSuccess(c, http.StatusOK, "Upload service successfully", nil)
 }
+
+func (s *ServiceHandler) GetServices(c *gin.Context) {
+	services, err := s.service.GetServices(c.Request.Context())
+	if err != nil {
+		helper.SendError(c, http.StatusInternalServerError, err, helper.ErrInternal)
+		return
+	}
+	helper.SendSuccess(c, http.StatusOK, "Get services successfully", services)
+}
