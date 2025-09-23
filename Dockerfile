@@ -37,4 +37,4 @@ RUN chmod +x /wait-for-it.sh
 EXPOSE 8020
 
 # Set the entrypoint to wait for MariaDB to be ready before starting the application
-CMD ["/wait-for-it.sh", "service_management_db:27017", "--", "./api", "/configs/config.yaml"] 
+CMD ["/wait-for-it.sh", "services_db:27017", "--", "./api", "/configs/config.yaml"] 
