@@ -1,6 +1,6 @@
-Terms
-GET     /api/v1/terms
-GET     /api/v1/terms/:id
-POST    /api/v1/terms
-PUT     /api/v1/terms/:id
+Services
+GET     /api/v1/admin/services
+POST    /api/v1/admin/services
 
+ServicesGroup
+POST /api/v1/admin/services/groups

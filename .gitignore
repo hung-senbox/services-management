@@ -7,3 +7,6 @@ cmd/Log
 
 # ignore debug
 __debug_bin*
+
+# ignore GitHub config/workflows
+.github

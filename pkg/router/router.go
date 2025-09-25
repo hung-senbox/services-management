@@ -17,15 +17,15 @@ func SetupRouter(consulClient *api.Client, serviceCollection *mongo.Collection, 
 	// gateway
 	//userGateway := gateway.NewUserGateway("go-main-service", consulClient)
 
-	// services
-	serviceRepo := repository.NewServiceRepository(serviceCollection)
-	svManagementService := service.NewSvManagementService(serviceRepo)
-	serviceHandler := handler.NewServiceHandler(svManagementService)
-
 	// services group
 	serviceGroupRepo := repository.NewServiceGroupRepository(serviceGroupCollection)
 	serviceGroupService := service.NewSVGroupService(serviceGroupRepo)
 	serviceGroupHandler := handler.NewServiceGroupHandler(serviceGroupService)
+
+	// services
+	serviceRepo := repository.NewServiceRepository(serviceCollection)
+	svManagementService := service.NewSvManagementService(serviceRepo, serviceGroupRepo)
+	serviceHandler := handler.NewServiceHandler(svManagementService)
 
 	// Register routes
 	route.RegisterServiceRoutes(r, serviceHandler, serviceGroupHandler)
