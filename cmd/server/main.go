@@ -19,6 +19,7 @@ import (
 )
 
 func main() {
+	log.Printf("Starting server...")
 	filePath := os.Args[1]
 	if filePath == "" {
 		filePath = "configs/config.yaml"
