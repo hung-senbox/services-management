@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/api/watch"
 	"services-management/pkg/config"
 	"services-management/pkg/logger"
+
+	"github.com/hashicorp/consul/api"
+	"github.com/hashicorp/consul/api/watch"
 )
 
 const (
@@ -37,7 +38,7 @@ type service struct {
 }
 
 func NewConsulConn(log *logger.Logger, cfg *config.Config) *service {
-	consulHost := cfg.Consul.Host
+	consulHost := cfg.Registry.Host
 	if consulHost == "" {
 		// Fallback to localhost if the host is not set in the config
 		consulHost = "localhost"
