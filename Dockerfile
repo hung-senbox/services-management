@@ -1,40 +1,30 @@
-# Official Go Alpine Base Image for building the application
-FROM golang:1.24-alpine AS builder
+# Build stage
+FROM golang:1.21-alpine AS builder
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the Go modules files and download dependencies
+# Copy go mod files
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the entire source code into the container
+# Copy source code
 COPY . .
 
-# Build the Go binary
-RUN go build -o api cmd/server/main.go
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o services-management cmd/server/main.go
 
-# Final Image Creation Stage using a lightweight Alpine image
-FROM alpine:3.21
+# Final stage
+FROM alpine:latest
 
-# Set the working directory
+RUN apk --no-cache add ca-certificates
+
 WORKDIR /root/
 
-# Install any necessary dependencies (e.g., for running Go binaries or for configuration file access)
-RUN apk add --no-cache libc6-compat bash
+# Copy the binary from builder
+COPY --from=builder /app/services-management .
+COPY --from=builder /app/.env.example .env.example
 
-# Copy the built Go binary from the builder image
-COPY --from=builder /app/api .
+EXPOSE 8080
 
-# Copy the config.example.yaml file and rename it to config.yaml
-COPY ./configs/config.prod.yaml ./configs/config.yaml
+CMD ["./services-management"]
 
-# Copy the wait-for-it.sh script into the container
-COPY ./scripts/wait-for-it.sh /wait-for-it.sh
-RUN chmod +x /wait-for-it.sh
-
-# Expose the necessary port
-EXPOSE 8020
-
-# Set the entrypoint to wait for MariaDB to be ready before starting the application
-CMD ["/wait-for-it.sh", "services_db:27017", "--", "./api", "/configs/config.yaml"] 

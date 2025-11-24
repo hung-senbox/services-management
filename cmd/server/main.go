@@ -3,67 +3,24 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-	"time"
 
-	// "os"
-
-	"services-management/pkg/config"
-	"services-management/pkg/consul"
-	"services-management/pkg/db"
-	"services-management/pkg/router"
-
-	"services-management/pkg/zap"
-
-	consulapi "github.com/hashicorp/consul/api"
+	"github.com/senbox/services-management/internal/app"
 )
 
 func main() {
-	log.Printf("Starting server...")
-	filePath := os.Args[1]
-	if filePath == "" {
-		filePath = "configs/config.yaml"
-	}
-
-	config.LoadConfig(filePath)
-
-	cfg := config.AppConfig
-
-	// logger.WriteLogData("info", map[string]any{"id": 123, "name": "Hung"})
-
-	//logger
-	logger, err := zap.New(cfg)
+	// Initialize application container with all dependencies
+	container, err := app.NewContainer()
 	if err != nil {
-		log.Fatalf("Failed to initialize logger: %v", err)
+		log.Fatalf("Failed to initialize application: %v", err)
 	}
 
-	//consul
-	consulConn := consul.NewConsulConn(logger, cfg)
-	consulClient := consulConn.Connect()
-	defer consulConn.Deregister()
+	// Log server start
+	addr := fmt.Sprintf("%s:%s", container.Config.Server.Host, container.Config.Server.Port)
+	container.Logger.Info(fmt.Sprintf("Server starting on %s", addr))
+	log.Printf("Server starting on %s", addr)
 
-	if err := waitPassing(consulClient, "go-main-service", 60*time.Second); err != nil {
-		logger.Fatalf("Dependency not ready: %v", err)
+	// Start HTTP server
+	if err := container.App.Listen(addr); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
 	}
-
-	//db
-	db.ConnectMongoDB()
-
-	r := router.SetupRouter(consulClient, db.ServiceCollection, db.ServiceGroupCollection)
-	port := cfg.Server.Port
-	if err := r.Run(":" + port); err != nil {
-		log.Fatal("Failed to run server:", err)
-	}
-}
-
-func waitPassing(cli *consulapi.Client, name string, timeout time.Duration) error {
-	dl := time.Now().Add(timeout)
-	for time.Now().Before(dl) {
-		entries, _, err := cli.Health().Service(name, "", true, nil)
-		if err == nil && len(entries) > 0 {
-			return nil
-		}
-		time.Sleep(2 * time.Second)
-	}
-	return fmt.Errorf("%s not ready in consul", name)
 }

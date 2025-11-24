@@ -1,12 +1,34 @@
-# Ignore local configuration
-.vscode
-configs/config.yaml
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
 
-# ignore log
-cmd/Log
+# Test files
+*.test
+*.out
+coverage.out
 
-# ignore debug
-__debug_bin*
+# Environment files
+.env
 
-# ignore GitHub config/workflows
-.github
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+

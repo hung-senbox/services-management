@@ -1,104 +1,55 @@
 package config
 
 import (
-	"log"
 	"os"
 
-	"gopkg.in/yaml.v3"
+	"github.com/joho/godotenv"
 )
 
+// Config holds all application configuration
+type Config struct {
+	Server  ServerConfig
+	MongoDB MongoDBConfig
+}
+
+// ServerConfig holds server configuration
 type ServerConfig struct {
-	Port string `yaml:"port"`
+	Host string
+	Port string
 }
 
-type DatabaseConfig struct {
-	Active string        `yaml:"active"` // "mysql" or "mongodb"
-	MySQL  MySQLConfig   `yaml:"mysql"`
-	Mongo  MongoDBConfig `yaml:"mongodb"`
-}
-
-type MySQLConfig struct {
-	Host     string `yaml:"host"`
-	Port     string `yaml:"port"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
-	Name     string `yaml:"name"`
-}
-
+// MongoDBConfig holds MongoDB configuration
 type MongoDBConfig struct {
-	Host     string `yaml:"host"`
-	Port     string `yaml:"port"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
-	Name     string `yaml:"name"`
+	Host     string
+	Port     string
+	User     string // Optional - leave empty for no auth
+	Password string // Optional - leave empty for no auth
+	DBName   string
 }
 
-type ConsulConfig struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
+// Load loads configuration from environment variables
+func Load() (*Config, error) {
+	// Load .env file if exists (errors ignored)
+	_ = godotenv.Load()
+
+	return &Config{
+		Server: ServerConfig{
+			Host: getEnv("SERVER_HOST", "localhost"),
+			Port: getEnv("SERVER_PORT", "8080"),
+		},
+		MongoDB: MongoDBConfig{
+			Host:     getEnv("MONGO_HOST", "localhost"),
+			Port:     getEnv("MONGO_PORT", "27017"),
+			User:     getEnv("MONGO_USER", ""),     // Empty = no authentication
+			Password: getEnv("MONGO_PASSWORD", ""), // Empty = no authentication
+			DBName:   getEnv("MONGO_DB_NAME", "services_management"),
+		},
+	}, nil
 }
 
-type ZapConfig struct {
-	Development bool   `mapstructure:"development"`
-	Caller      bool   `mapstructure:"caller"`
-	Stacktrace  string `mapstructure:"stacktrace"`
-	Cores       struct {
-		Console struct {
-			Type     string `mapstructure:"type"`
-			Level    string `mapstructure:"level"`
-			Encoding string `mapstructure:"encoding"`
-		} `mapstructure:"console"`
-	} `mapstructure:"cores"`
-}
-
-type AppConfiguration struct {
-	Name        string    `mapstructure:"name"`
-	Version     string    `mapstructure:"version"`
-	Environment string    `mapstructure:"environment"`
-	API         APIConfig `mapstructure:"api"`
-}
-
-type APIConfig struct {
-	Rest RestConfig `mapstructure:"rest"`
-}
-
-type RestConfig struct {
-	Host    string        `mapstructure:"host"`
-	Port    string        `mapstructure:"port"`
-	Setting SettingConfig `mapstructure:"setting"`
-}
-type SettingConfig struct {
-	Debug               bool     `mapstructure:"debug"`
-	DebugErrorsResponse bool     `mapstructure:"debugErrorsResponse"`
-	IgnoreLogUrls       []string `mapstructure:"ignoreLogUrls"`
-}
-
-type Registry struct {
-	Host string `mapstructure:"host" validate:"required"`
-}
-
-type AppConfigStruct struct {
-	Server   ServerConfig     `yaml:"server"`
-	Database DatabaseConfig   `yaml:"database"`
-	Consul   ConsulConfig     `yaml:"consul"`
-	Zap      ZapConfig        `mapstructure:"zap"`
-	Registry Registry         `mapstructure:"registry" validate:"required"`
-	App      AppConfiguration `mapstructure:"app"`
-}
-
-var AppConfig *AppConfigStruct
-
-func LoadConfig(filePath string) {
-	data, err := os.ReadFile(filePath)
-	if err != nil {
-		log.Fatalf("Failed to read config file: %v", err)
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
 	}
-
-	AppConfig = &AppConfigStruct{}
-	err = yaml.Unmarshal(data, AppConfig)
-	if err != nil {
-		log.Fatalf("Failed to unmarshal config: %v", err)
-	}
-
-	log.Println("Config loaded successfully")
+	return defaultValue
 }
