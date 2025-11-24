@@ -1,10 +1,13 @@
 package http
 
 import (
+	"services-management/internal/interface/http/handler"
+	"services-management/internal/interface/http/route"
+	"services-management/internal/interface/middleware"
+	"services-management/pkg/gateway"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/senbox/services-management/internal/interface/http/handler"
-	"github.com/senbox/services-management/internal/interface/http/route"
-	"github.com/senbox/services-management/internal/interface/middleware"
+	fiberLogger "github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 // SetupRouter sets up the Fiber router
@@ -12,12 +15,14 @@ func SetupRouter(
 	serviceGroupHandler *handler.ServiceGroupHandler,
 	serviceHandler *handler.ServiceHandler,
 	auditMiddleware *middleware.AuditMiddleware,
+	userGateway gateway.UserGateway,
 ) *fiber.App {
 	app := fiber.New(fiber.Config{
 		AppName: "Services Management v1.0",
 	})
 
 	// Apply global middlewares
+	app.Use(fiberLogger.New())
 	app.Use(middleware.LoggingMiddleware())
 	app.Use(middleware.CORSMiddleware())
 	app.Use(auditMiddleware.Log())
@@ -30,7 +35,7 @@ func SetupRouter(
 	})
 
 	// Service Groups routes
-	route.SetUpServiceGroupRoutes(app, serviceGroupHandler)
+	route.SetUpServiceGroupRoutes(app, serviceGroupHandler, userGateway)
 
 	// Services routes
 	route.SetUpServiceRoutes(app, serviceHandler)

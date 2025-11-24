@@ -1,10 +1,14 @@
 package handler
 
 import (
+	"errors"
+	"services-management/internal/domain/usecase"
+	"services-management/internal/interface/http/dto"
+	"services-management/internal/interface/http/mapper"
+
+	libs_helper "services-management/pkg/libs/helper"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/senbox/services-management/internal/domain/usecase"
-	"github.com/senbox/services-management/internal/interface/http/dto"
-	"github.com/senbox/services-management/internal/interface/http/mapper"
 )
 
 type ServiceHandler struct {
@@ -20,28 +24,19 @@ func NewServiceHandler(serviceUseCase usecase.ServiceUseCase) *ServiceHandler {
 func (h *ServiceHandler) CreateService(c *fiber.Ctx) error {
 	var req dto.CreateServiceRequest
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request body",
-		})
+		return libs_helper.SendError(c, fiber.StatusBadRequest, err, libs_helper.ErrInvalidRequest)
 	}
 
 	service, err := mapper.ToServiceEntity(&req)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid service group ID",
-		})
+		return libs_helper.SendError(c, fiber.StatusBadRequest, err, libs_helper.ErrInvalidRequest)
 	}
 
 	if err := h.serviceUseCase.CreateService(c.Context(), service); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to create service",
-		})
+		return libs_helper.SendError(c, fiber.StatusInternalServerError, err, libs_helper.ErrInternal)
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "Service created successfully",
-		"data":    mapper.ToServiceResponse(service),
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusCreated, "Service created successfully", mapper.ToServiceResponse(service))
 }
 
 func (h *ServiceHandler) GetServiceByID(c *fiber.Ctx) error {
@@ -49,28 +44,20 @@ func (h *ServiceHandler) GetServiceByID(c *fiber.Ctx) error {
 
 	service, err := h.serviceUseCase.GetServiceByID(c.Context(), id)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid ID format",
-		})
+		return libs_helper.SendError(c, fiber.StatusBadRequest, err, libs_helper.ErrInvalidRequest)
 	}
 
 	if service == nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "Service not found",
-		})
+		return libs_helper.SendError(c, fiber.StatusNotFound, errors.New("service not found"), libs_helper.ErrNotFound)
 	}
 
-	return c.JSON(fiber.Map{
-		"data": mapper.ToServiceResponse(service),
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusOK, "Service fetched successfully", mapper.ToServiceResponse(service))
 }
 
 func (h *ServiceHandler) GetAllServices(c *fiber.Ctx) error {
 	services, err := h.serviceUseCase.GetAllServices(c.Context())
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to fetch services",
-		})
+		return libs_helper.SendError(c, fiber.StatusInternalServerError, err, libs_helper.ErrInternal)
 	}
 
 	var response []*dto.ServiceResponse
@@ -78,9 +65,7 @@ func (h *ServiceHandler) GetAllServices(c *fiber.Ctx) error {
 		response = append(response, mapper.ToServiceResponse(s))
 	}
 
-	return c.JSON(fiber.Map{
-		"data": response,
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusOK, "Services fetched successfully", response)
 }
 
 func (h *ServiceHandler) GetServicesByGroupID(c *fiber.Ctx) error {
@@ -88,9 +73,7 @@ func (h *ServiceHandler) GetServicesByGroupID(c *fiber.Ctx) error {
 
 	services, err := h.serviceUseCase.GetServicesByGroupID(c.Context(), serviceGroupID)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid service group ID",
-		})
+		return libs_helper.SendError(c, fiber.StatusBadRequest, err, libs_helper.ErrInvalidRequest)
 	}
 
 	var response []*dto.ServiceResponse
@@ -98,9 +81,7 @@ func (h *ServiceHandler) GetServicesByGroupID(c *fiber.Ctx) error {
 		response = append(response, mapper.ToServiceResponse(s))
 	}
 
-	return c.JSON(fiber.Map{
-		"data": response,
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusOK, "Services fetched successfully", response)
 }
 
 func (h *ServiceHandler) UpdateService(c *fiber.Ctx) error {
@@ -108,40 +89,27 @@ func (h *ServiceHandler) UpdateService(c *fiber.Ctx) error {
 
 	var req dto.UpdateServiceRequest
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request body",
-		})
+		return libs_helper.SendError(c, fiber.StatusBadRequest, err, libs_helper.ErrInvalidRequest)
 	}
 
 	service, err := mapper.ToServiceEntityFromUpdate(id, &req)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid ID format",
-		})
+		return libs_helper.SendError(c, fiber.StatusBadRequest, err, libs_helper.ErrInvalidRequest)
 	}
 
 	if err := h.serviceUseCase.UpdateService(c.Context(), service); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to update service",
-		})
+		return libs_helper.SendError(c, fiber.StatusInternalServerError, err, libs_helper.ErrInternal)
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "Service updated successfully",
-		"data":    mapper.ToServiceResponse(service),
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusOK, "Service updated successfully", mapper.ToServiceResponse(service))
 }
 
 func (h *ServiceHandler) DeleteService(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	if err := h.serviceUseCase.DeleteService(c.Context(), id); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to delete service",
-		})
+		return libs_helper.SendError(c, fiber.StatusInternalServerError, err, libs_helper.ErrInternal)
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "Service deleted successfully",
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusOK, "Service deleted successfully", nil)
 }

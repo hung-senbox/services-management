@@ -1,16 +1,23 @@
 package app
 
 import (
+	"services-management/internal/domain/repository"
+	"services-management/internal/domain/usecase"
+	"services-management/internal/infrastructure/database"
+	infraRepo "services-management/internal/infrastructure/repository"
+	httpInterface "services-management/internal/interface/http"
+	"services-management/internal/interface/http/handler"
+	"services-management/internal/interface/middleware"
+	"services-management/pkg/config"
+	"services-management/pkg/consul"
+	"services-management/pkg/gateway"
+	"services-management/pkg/logger"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/senbox/services-management/internal/domain/repository"
-	"github.com/senbox/services-management/internal/domain/usecase"
-	"github.com/senbox/services-management/internal/infrastructure/database"
-	infraRepo "github.com/senbox/services-management/internal/infrastructure/repository"
-	httpInterface "github.com/senbox/services-management/internal/interface/http"
-	"github.com/senbox/services-management/internal/interface/http/handler"
-	"github.com/senbox/services-management/internal/interface/middleware"
-	"github.com/senbox/services-management/pkg/config"
-	"github.com/senbox/services-management/pkg/logger"
+	"github.com/hashicorp/consul/api"
+	"github.com/hung-senbox/senbox-cache-service/pkg/cache"
+	"github.com/hung-senbox/senbox-cache-service/pkg/cache/cached"
+	"github.com/hung-senbox/senbox-cache-service/pkg/redis"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -27,6 +34,11 @@ type Container struct {
 	ServiceHandler      *handler.ServiceHandler
 	AuditMiddleware     *middleware.AuditMiddleware
 	App                 *fiber.App
+	UserGateway         gateway.UserGateway
+	Consul              *api.Client
+	ConsulConn          consul.Client
+	CacheClientRedis    *cache.RedisCache
+	CachedMainGateway   cached.CachedMainGateway
 }
 
 // NewContainer initializes all application dependencies
@@ -53,6 +65,16 @@ func NewContainer() (*Container, error) {
 		return nil, err
 	}
 
+	// Initialize Redis cache
+	if err := c.initCache(); err != nil {
+		return nil, err
+	}
+
+	// Initialize Consul
+	if err := c.initConsul(); err != nil {
+		return nil, err
+	}
+
 	// Initialize repositories
 	c.initRepositories()
 
@@ -61,6 +83,9 @@ func NewContainer() (*Container, error) {
 
 	// Initialize handlers
 	c.initHandlers()
+
+	// Initialize gateway
+	c.initGateway()
 
 	// Initialize middlewares
 	c.initMiddlewares()
@@ -118,5 +143,31 @@ func (c *Container) setupRouter() {
 		c.ServiceGroupHandler,
 		c.ServiceHandler,
 		c.AuditMiddleware,
+		c.UserGateway,
 	)
+}
+
+func (c *Container) initCache() error {
+	// redis cache
+	cacheClientRedis, err := redis.InitRedisCache(c.Config.Database.RedisCache.Host, c.Config.Database.RedisCache.Port, c.Config.Database.RedisCache.Password, c.Config.Database.RedisCache.DB)
+	if err != nil {
+		return err
+	}
+	c.CacheClientRedis = cacheClientRedis
+	c.Logger.Info("Redis cache initialized successfully")
+	c.CachedMainGateway = cached.NewCachedMainGateway(cacheClientRedis)
+	return nil
+}
+
+func (c *Container) initGateway() {
+	c.UserGateway = gateway.NewUserGateway("go-main-service", c.Consul, c.CachedMainGateway, c.Logger)
+	c.Logger.Info("Gateway initialized successfully")
+}
+
+func (c *Container) initConsul() error {
+	consulConn := consul.NewConsulConn(c.Logger, c.Config)
+	c.Consul = consulConn.Connect()
+	c.ConsulConn = consulConn
+	c.Logger.Info("Consul initialized successfully")
+	return nil
 }

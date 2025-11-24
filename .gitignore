@@ -4,6 +4,7 @@ bin/
 *.dll
 *.so
 *.dylib
+*.
 
 # Test files
 *.test
@@ -32,3 +33,6 @@ logs/
 tmp/
 temp/
 
+
+# ignore debug
+__debug_bin*

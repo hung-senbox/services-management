@@ -10,8 +10,8 @@ import (
 
 	"github.com/hashicorp/consul/api"
 	"github.com/hashicorp/consul/api/watch"
-	"github.com/senbox/services-management/pkg/config"
-	"github.com/senbox/services-management/pkg/logger"
+	"services-management/pkg/config"
+	"services-management/pkg/logger"
 )
 
 const (
@@ -37,7 +37,7 @@ type service struct {
 }
 
 func NewConsulConn(log *logger.Logger, cfg *config.Config) *service {
-	consulHost := cfg.Registry.Host
+	consulHost := cfg.Consul.Host
 	if consulHost == "" {
 		// Fallback to localhost if the host is not set in the config
 		consulHost = "localhost"

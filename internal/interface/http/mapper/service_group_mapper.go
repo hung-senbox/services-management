@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"github.com/senbox/services-management/internal/domain/entity"
-	"github.com/senbox/services-management/internal/interface/http/dto"
+	"services-management/internal/domain/entity"
+	"services-management/internal/interface/http/dto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/senbox/services-management/pkg/logger"
+	"services-management/pkg/logger"
 )
 
 // AuditMiddleware logs all requests for audit purposes

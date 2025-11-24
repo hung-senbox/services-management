@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"github.com/senbox/services-management/internal/domain/entity"
-	"github.com/senbox/services-management/internal/domain/repository"
+	"services-management/internal/domain/entity"
+	"services-management/internal/domain/repository"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

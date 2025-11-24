@@ -2,7 +2,7 @@ package route
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/senbox/services-management/internal/interface/http/handler"
+	"services-management/internal/interface/http/handler"
 )
 
 func SetUpServiceRoutes(app *fiber.App, serviceHandler *handler.ServiceHandler) {

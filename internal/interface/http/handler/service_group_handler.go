@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"errors"
+	"services-management/internal/domain/usecase"
+	"services-management/internal/interface/http/dto"
+	"services-management/internal/interface/http/mapper"
+	libs_helper "services-management/pkg/libs/helper"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/senbox/services-management/internal/domain/usecase"
-	"github.com/senbox/services-management/internal/interface/http/dto"
-	"github.com/senbox/services-management/internal/interface/http/mapper"
 )
 
 type ServiceGroupHandler struct {
@@ -20,22 +23,15 @@ func NewServiceGroupHandler(serviceGroupUseCase usecase.ServiceGroupUseCase) *Se
 func (h *ServiceGroupHandler) CreateServiceGroup(c *fiber.Ctx) error {
 	var req dto.CreateServiceGroupRequest
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request body",
-		})
+		return libs_helper.SendError(c, fiber.StatusBadRequest, err, libs_helper.ErrInvalidRequest)
 	}
 
 	serviceGroup := mapper.ToServiceGroupEntity(&req)
 	if err := h.serviceGroupUseCase.CreateServiceGroup(c.Context(), serviceGroup); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to create service group",
-		})
+		return libs_helper.SendError(c, fiber.StatusInternalServerError, err, libs_helper.ErrInternal)
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "Service group created successfully",
-		"data":    mapper.ToServiceGroupResponse(serviceGroup),
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusCreated, "Service group created successfully", mapper.ToServiceGroupResponse(serviceGroup))
 }
 
 func (h *ServiceGroupHandler) GetServiceGroupByID(c *fiber.Ctx) error {
@@ -43,28 +39,20 @@ func (h *ServiceGroupHandler) GetServiceGroupByID(c *fiber.Ctx) error {
 
 	serviceGroup, err := h.serviceGroupUseCase.GetServiceGroupByID(c.Context(), id)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid ID format",
-		})
+		return libs_helper.SendError(c, fiber.StatusBadRequest, err, libs_helper.ErrInvalidRequest)
 	}
 
 	if serviceGroup == nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "Service group not found",
-		})
+		return libs_helper.SendError(c, fiber.StatusNotFound, errors.New("service group not found"), libs_helper.ErrNotFound)
 	}
 
-	return c.JSON(fiber.Map{
-		"data": mapper.ToServiceGroupResponse(serviceGroup),
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusOK, "Service group fetched successfully", mapper.ToServiceGroupResponse(serviceGroup))
 }
 
 func (h *ServiceGroupHandler) GetAllServiceGroups(c *fiber.Ctx) error {
 	serviceGroups, err := h.serviceGroupUseCase.GetAllServiceGroups(c.Context())
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to fetch service groups",
-		})
+		return libs_helper.SendError(c, fiber.StatusInternalServerError, err, libs_helper.ErrInternal)
 	}
 
 	var response []*dto.ServiceGroupResponse
@@ -72,9 +60,7 @@ func (h *ServiceGroupHandler) GetAllServiceGroups(c *fiber.Ctx) error {
 		response = append(response, mapper.ToServiceGroupResponse(sg))
 	}
 
-	return c.JSON(fiber.Map{
-		"data": response,
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusOK, "Service groups fetched successfully", response)
 }
 
 func (h *ServiceGroupHandler) UpdateServiceGroup(c *fiber.Ctx) error {
@@ -82,40 +68,27 @@ func (h *ServiceGroupHandler) UpdateServiceGroup(c *fiber.Ctx) error {
 
 	var req dto.UpdateServiceGroupRequest
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request body",
-		})
+		return libs_helper.SendError(c, fiber.StatusBadRequest, err, libs_helper.ErrInvalidRequest)
 	}
 
 	serviceGroup, err := mapper.ToServiceGroupEntityFromUpdate(id, &req)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid ID format",
-		})
+		return libs_helper.SendError(c, fiber.StatusBadRequest, err, libs_helper.ErrInvalidRequest)
 	}
 
 	if err := h.serviceGroupUseCase.UpdateServiceGroup(c.Context(), serviceGroup); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to update service group",
-		})
+		return libs_helper.SendError(c, fiber.StatusInternalServerError, err, libs_helper.ErrInternal)
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "Service group updated successfully",
-		"data":    mapper.ToServiceGroupResponse(serviceGroup),
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusOK, "Service group updated successfully", mapper.ToServiceGroupResponse(serviceGroup))
 }
 
 func (h *ServiceGroupHandler) DeleteServiceGroup(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	if err := h.serviceGroupUseCase.DeleteServiceGroup(c.Context(), id); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to delete service group",
-		})
+		return libs_helper.SendError(c, fiber.StatusInternalServerError, err, libs_helper.ErrInternal)
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "Service group deleted successfully",
-	})
+	return libs_helper.SendSuccess(c, fiber.StatusOK, "Service group deleted successfully", nil)
 }

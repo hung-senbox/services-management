@@ -13,6 +13,7 @@ type Config struct {
 	MongoDB  MongoDBConfig
 	Consul   ConsulConfig
 	Registry RegistryConfig
+	Database DatabaseConfig
 }
 
 // ServerConfig holds server configuration
@@ -41,6 +42,19 @@ type RegistryConfig struct {
 	Host string
 }
 
+// DatabaseConfig holds database configuration
+type DatabaseConfig struct {
+	RedisCache RedisCacheConfig
+}
+
+// RedisCacheConfig holds Redis cache configuration
+type RedisCacheConfig struct {
+	Host     string
+	Port     string
+	Password string
+	DB       int
+}
+
 // Load loads configuration from environment variables
 func Load() (*Config, error) {
 	// Load .env file if exists (errors ignored)
@@ -65,6 +79,14 @@ func Load() (*Config, error) {
 		Registry: RegistryConfig{
 			Host: getEnv("REGISTRY_HOST", "localhost"),
 		},
+		Database: DatabaseConfig{
+			RedisCache: RedisCacheConfig{
+				Host:     getEnv("REDIS_HOST", "localhost"),
+				Port:     getEnv("REDIS_PORT", "6379"),
+				Password: getEnv("REDIS_PASSWORD", ""),
+				DB:       getEnvAsInt("REDIS_DB", 0),
+			},
+		},
 	}, nil
 }
 
@@ -80,7 +102,7 @@ func getEnvAsInt(key string, defaultValue int) int {
 	if valueStr == "" {
 		return defaultValue
 	}
-	
+
 	var value int
 	if _, err := fmt.Sscanf(valueStr, "%d", &value); err != nil {
 		return defaultValue

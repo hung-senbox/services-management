@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/senbox/services-management/internal/domain/entity"
+	"services-management/internal/domain/entity"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
