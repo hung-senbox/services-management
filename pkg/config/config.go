@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -8,8 +9,10 @@ import (
 
 // Config holds all application configuration
 type Config struct {
-	Server  ServerConfig
-	MongoDB MongoDBConfig
+	Server   ServerConfig
+	MongoDB  MongoDBConfig
+	Consul   ConsulConfig
+	Registry RegistryConfig
 }
 
 // ServerConfig holds server configuration
@@ -25,6 +28,17 @@ type MongoDBConfig struct {
 	User     string // Optional - leave empty for no auth
 	Password string // Optional - leave empty for no auth
 	DBName   string
+}
+
+// ConsulConfig holds Consul configuration
+type ConsulConfig struct {
+	Host string
+	Port int
+}
+
+// RegistryConfig holds service registry configuration
+type RegistryConfig struct {
+	Host string
 }
 
 // Load loads configuration from environment variables
@@ -44,6 +58,13 @@ func Load() (*Config, error) {
 			Password: getEnv("MONGO_PASSWORD", ""), // Empty = no authentication
 			DBName:   getEnv("MONGO_DB_NAME", "services_management"),
 		},
+		Consul: ConsulConfig{
+			Host: getEnv("CONSUL_HOST", "localhost"),
+			Port: getEnvAsInt("CONSUL_PORT", 8500),
+		},
+		Registry: RegistryConfig{
+			Host: getEnv("REGISTRY_HOST", "localhost"),
+		},
 	}, nil
 }
 
@@ -52,4 +73,17 @@ func getEnv(key, defaultValue string) string {
 		return value
 	}
 	return defaultValue
+}
+
+func getEnvAsInt(key string, defaultValue int) int {
+	valueStr := os.Getenv(key)
+	if valueStr == "" {
+		return defaultValue
+	}
+	
+	var value int
+	if _, err := fmt.Sscanf(valueStr, "%d", &value); err != nil {
+		return defaultValue
+	}
+	return value
 }

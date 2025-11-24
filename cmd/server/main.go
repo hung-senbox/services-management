@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/senbox/services-management/internal/app"
+	"github.com/senbox/services-management/pkg/consul"
 )
 
 func main() {
@@ -13,6 +14,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to initialize application: %v", err)
 	}
+
+	// Initialize Consul connection
+	consulConn := consul.NewConsulConn(container.Logger, container.Config)
+	_ = consulConn.Connect()
+	defer consulConn.Deregister()
 
 	// Log server start
 	addr := fmt.Sprintf("%s:%s", container.Config.Server.Host, container.Config.Server.Port)
