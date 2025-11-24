@@ -5,7 +5,6 @@ import (
 	"github.com/senbox/services-management/internal/domain/usecase"
 	"github.com/senbox/services-management/internal/interface/http/dto"
 	"github.com/senbox/services-management/internal/interface/http/mapper"
-	validatorPkg "github.com/senbox/services-management/pkg/validator"
 )
 
 type ServiceGroupHandler struct {
@@ -23,12 +22,6 @@ func (h *ServiceGroupHandler) CreateServiceGroup(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
-		})
-	}
-
-	if err := validatorPkg.Validate(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err,
 		})
 	}
 
@@ -91,12 +84,6 @@ func (h *ServiceGroupHandler) UpdateServiceGroup(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
-		})
-	}
-
-	if err := validatorPkg.Validate(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err,
 		})
 	}
 
