@@ -24,12 +24,12 @@ func NewServiceGroupRepositoryMongo(db *mongo.Database) repository.ServiceGroupR
 func (r *serviceGroupRepositoryMongo) Create(ctx context.Context, serviceGroup *entity.ServiceGroup) error {
 	serviceGroup.CreatedAt = time.Now()
 	serviceGroup.UpdatedAt = time.Now()
-	
+
 	result, err := r.collection.InsertOne(ctx, serviceGroup)
 	if err != nil {
 		return err
 	}
-	
+
 	serviceGroup.ID = result.InsertedID.(primitive.ObjectID)
 	return nil
 }
@@ -63,7 +63,7 @@ func (r *serviceGroupRepositoryMongo) FindAll(ctx context.Context) ([]*entity.Se
 
 func (r *serviceGroupRepositoryMongo) Update(ctx context.Context, serviceGroup *entity.ServiceGroup) error {
 	serviceGroup.UpdatedAt = time.Now()
-	
+
 	filter := bson.M{"_id": serviceGroup.ID}
 	update := bson.M{
 		"$set": bson.M{
@@ -71,11 +71,12 @@ func (r *serviceGroupRepositoryMongo) Update(ctx context.Context, serviceGroup *
 			"order":       serviceGroup.Order,
 			"is_active":   serviceGroup.IsActive,
 			"description": serviceGroup.Description,
-			"icon_key":    serviceGroup.IconKey,
+			"url":         serviceGroup.Url,
+			"icon":        serviceGroup.Icon,
 			"updated_at":  serviceGroup.UpdatedAt,
 		},
 	}
-	
+
 	_, err := r.collection.UpdateOne(ctx, filter, update)
 	return err
 }
@@ -84,4 +85,3 @@ func (r *serviceGroupRepositoryMongo) Delete(ctx context.Context, id primitive.O
 	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
 	return err
 }
-

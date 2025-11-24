@@ -12,7 +12,8 @@ func ToServiceGroupEntity(req *dto.CreateServiceGroupRequest) *entity.ServiceGro
 		Order:       req.Order,
 		IsActive:    req.IsActive,
 		Description: req.Description,
-		IconKey:     req.IconKey,
+		Url:         req.Url,
+		Icon:        req.Icon,
 	}
 }
 
@@ -23,7 +24,8 @@ func ToServiceGroupResponse(sg *entity.ServiceGroup) *dto.ServiceGroupResponse {
 		Order:       sg.Order,
 		IsActive:    sg.IsActive,
 		Description: sg.Description,
-		IconKey:     sg.IconKey,
+		Icon:        sg.Icon,
+		Url:         sg.Url,
 		CreatedAt:   sg.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 		UpdatedAt:   sg.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
 	}
@@ -41,6 +43,7 @@ func ToServiceGroupEntityFromUpdate(id string, req *dto.UpdateServiceGroupReques
 		Order:       req.Order,
 		IsActive:    req.IsActive,
 		Description: req.Description,
-		IconKey:     req.IconKey,
+		Url:         req.Url,
+		Icon:        req.Icon,
 	}, nil
 }

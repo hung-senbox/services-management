@@ -5,7 +5,6 @@ import (
 	"github.com/senbox/services-management/internal/domain/usecase"
 	"github.com/senbox/services-management/internal/interface/http/dto"
 	"github.com/senbox/services-management/internal/interface/http/mapper"
-	validatorPkg "github.com/senbox/services-management/pkg/validator"
 )
 
 type ServiceHandler struct {
@@ -23,12 +22,6 @@ func (h *ServiceHandler) CreateService(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
-		})
-	}
-
-	if err := validatorPkg.Validate(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err,
 		})
 	}
 
@@ -53,7 +46,7 @@ func (h *ServiceHandler) CreateService(c *fiber.Ctx) error {
 
 func (h *ServiceHandler) GetServiceByID(c *fiber.Ctx) error {
 	id := c.Params("id")
-	
+
 	service, err := h.serviceUseCase.GetServiceByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -92,7 +85,7 @@ func (h *ServiceHandler) GetAllServices(c *fiber.Ctx) error {
 
 func (h *ServiceHandler) GetServicesByGroupID(c *fiber.Ctx) error {
 	serviceGroupID := c.Params("groupId")
-	
+
 	services, err := h.serviceUseCase.GetServicesByGroupID(c.Context(), serviceGroupID)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -112,17 +105,11 @@ func (h *ServiceHandler) GetServicesByGroupID(c *fiber.Ctx) error {
 
 func (h *ServiceHandler) UpdateService(c *fiber.Ctx) error {
 	id := c.Params("id")
-	
+
 	var req dto.UpdateServiceRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
-		})
-	}
-
-	if err := validatorPkg.Validate(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err,
 		})
 	}
 
@@ -147,7 +134,7 @@ func (h *ServiceHandler) UpdateService(c *fiber.Ctx) error {
 
 func (h *ServiceHandler) DeleteService(c *fiber.Ctx) error {
 	id := c.Params("id")
-	
+
 	if err := h.serviceUseCase.DeleteService(c.Context(), id); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete service",
@@ -158,4 +145,3 @@ func (h *ServiceHandler) DeleteService(c *fiber.Ctx) error {
 		"message": "Service deleted successfully",
 	})
 }
-

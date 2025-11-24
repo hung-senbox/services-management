@@ -5,7 +5,8 @@ type CreateServiceGroupRequest struct {
 	Order       int    `json:"order" validate:"required,gte=0"`
 	IsActive    bool   `json:"is_active"`
 	Description string `json:"description"`
-	IconKey     string `json:"icon_key"`
+	Url         string `json:"url"`
+	Icon        string `json:"icon"`
 }
 
 type UpdateServiceGroupRequest struct {
@@ -13,7 +14,8 @@ type UpdateServiceGroupRequest struct {
 	Order       int    `json:"order" validate:"required,gte=0"`
 	IsActive    bool   `json:"is_active"`
 	Description string `json:"description"`
-	IconKey     string `json:"icon_key"`
+	Url         string `json:"url"`
+	Icon        string `json:"icon"`
 }
 
 type ServiceGroupResponse struct {
@@ -22,8 +24,8 @@ type ServiceGroupResponse struct {
 	Order       int    `json:"order"`
 	IsActive    bool   `json:"is_active"`
 	Description string `json:"description"`
-	IconKey     string `json:"icon_key"`
+	Url         string `json:"url"`
+	Icon        string `json:"icon"`
 	CreatedAt   string `json:"created_at"`
 	UpdatedAt   string `json:"updated_at"`
 }
-
