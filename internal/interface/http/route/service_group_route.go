@@ -19,6 +19,7 @@ func SetUpServiceGroupRoutes(app *fiber.App, serviceGroupHandler *handler.Servic
 	serviceGroups := admin.Group("/service-groups")
 	serviceGroups.Post("", serviceGroupHandler.CreateServiceGroup)
 	serviceGroups.Get("", serviceGroupHandler.GetAllServiceGroups)
+	serviceGroups.Post("/migrate", serviceGroupHandler.MigrateServiceGroup)
 	serviceGroups.Get("/:id", serviceGroupHandler.GetServiceGroupByID)
 	serviceGroups.Put("/:id", serviceGroupHandler.UpdateServiceGroup)
 	serviceGroups.Delete("/:id", serviceGroupHandler.DeleteServiceGroup)

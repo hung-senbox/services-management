@@ -92,3 +92,11 @@ func (h *ServiceGroupHandler) DeleteServiceGroup(c *fiber.Ctx) error {
 
 	return libs_helper.SendSuccess(c, fiber.StatusOK, "Service group deleted successfully", nil)
 }
+
+func (h *ServiceGroupHandler) MigrateServiceGroup(c *fiber.Ctx) error {
+	if err := h.serviceGroupUseCase.MigrateServiceGroup(c.Context()); err != nil {
+		return libs_helper.SendError(c, fiber.StatusInternalServerError, err, libs_helper.ErrInternal)
+	}
+
+	return libs_helper.SendSuccess(c, fiber.StatusOK, "Service group migrated successfully", nil)
+}

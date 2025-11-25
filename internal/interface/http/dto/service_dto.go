@@ -6,6 +6,7 @@ type CreateServiceRequest struct {
 	IsActive       bool   `json:"is_active"`
 	Description    string `json:"description"`
 	Icon           string `json:"icon"`
+	Url            string `json:"url"`
 }
 
 type UpdateServiceRequest struct {
@@ -14,6 +15,7 @@ type UpdateServiceRequest struct {
 	IsActive       bool   `json:"is_active"`
 	Description    string `json:"description"`
 	Icon           string `json:"icon"`
+	Url            string `json:"url"`
 }
 
 type ServiceResponse struct {
